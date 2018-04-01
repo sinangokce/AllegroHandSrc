@@ -6,8 +6,6 @@
 #define RADIANS_TO_DEGREES(radians) ((radians) * (180.0 / M_PI))
 #define DEGREES_TO_RADIANS(angle) ((angle) / 180.0 * M_PI)
 
-
-
 int joint[16];
 int stop_table[16];
 int condinit;
@@ -20,7 +18,6 @@ double distance[DOF_JOINTS] = {0.0};
 
 AllegroNodeGraspController::AllegroNodeGraspController() {
          
-
   initControllerxx();
 
   grasp_type_sub = nh.subscribe("allegroHand_0/libsss_cmd", 1, &AllegroNodeGraspController::graspTypeControllerCallback, this);
@@ -194,15 +191,11 @@ void AllegroNodeGraspController::nextStateCallback(const sensor_msgs::JointState
 }
 
 void AllegroNodeGraspController::initControllerxx() {
-  std::cout<<"okokokok\n";
-
   current_state.position.resize(DOF_JOINTS);
-   ROS_INFO("dghsadhsa");
   current_state.velocity.resize(DOF_JOINTS);
   
   desired_state.position.resize(DOF_JOINTS);
   desired_state.velocity.resize(DOF_JOINTS);
-  ROS_INFO("543545");
 
   printf("*************************************\n");
   printf("         Grasp (BHand) Method        \n");
