@@ -11,6 +11,8 @@
 int joint[16];
 int stop_table[16];
 int condinit;
+float speed_Percentage=0;
+float hand_Direction=0;
 double desired_position[DOF_JOINTS] = {0.0};
 double current_position[DOF_JOINTS] = {0.0};
 double previous_position[DOF_JOINTS] = {0.0};
@@ -20,9 +22,10 @@ AllegroNodeGraspController::AllegroNodeGraspController()
          {
 
   initControllerxx();
-  std::cout<<"okokokok\n";
 
   grasp_type_sub = nh.subscribe("allegroHand_0/libsss_cmd", 1, &AllegroNodeGraspController::graspTypeControllerCallback, this);
+
+  SpeedPer_sub = nh.subscribe("/lwr/speedPercentage", 10, &AllegroNodeGraspController::speedPerCallback, this);
 
   desired_state_pub = nh.advertise<sensor_msgs::JointState>("allegroHand_0/joint_cmd", 1);
 
@@ -39,10 +42,10 @@ AllegroNodeGraspController::~AllegroNodeGraspController() {
   delete mutex;
 }
 
-/*void AllegroNodeGrasp::tactileInfoCallback(const std_msgs::String::ConstPtr &msg) {
-  ROS_INFO("sdsadcvbc<a");
+void AllegroNodeGraspController::speedPerCallback(const handtracker::spper &msg) {
+  speed_Percentage = msg.sPer;
+  hand_Direction = msg.dir;
 }
-*/
 
 void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::String::ConstPtr &msg) {
   ROS_INFO("CTRL: Heard: [%s]", msg->data.c_str());
@@ -176,7 +179,7 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
     //mutex->lock();
     for (int i = 0; i < DOF_JOINTS; i++) {
       distance[i] = std::abs(desired_position[i] - current_state.position[i]);
-      current_state.velocity[i] = distance[i]/8000;
+      current_state.velocity[i] = (distance[i]/8000)*speed_Percentage;
       joint[i] = 0;
       stop_table[i] = 0;
     }

@@ -10,26 +10,11 @@
 #include "ros/ros.h"
 #include "std_msgs/Float32.h"
 
-
-
-
-
 #include <string>
-//#include <boost/thread/thread.hpp>
 
 #include "sensor_msgs/JointState.h"
 
-
-
-//const int DOF_JOINTS = 16;
 #define DOF_JOINTS 16
-
-
-
-
-
-
-
 
 const std::string STOP_TOPIC = "allegroHand_0/stop_topic";
 const std::string CURRENT_LISTENER_TOPIC = "allegroHand_0/current_listener";

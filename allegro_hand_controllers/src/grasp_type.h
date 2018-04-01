@@ -8,6 +8,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 #include "std_msgs/Float32.h"
+#include "handtracker/spper.h"
 
 
 
@@ -21,17 +22,6 @@
 
 
 #define DOF_JOINTS 16
-
-
-
-
-
-
-
-
-
-
-
 
 const std::string STOP_TOPIC = "allegroHand_0/stop_topic";
 const std::string CURRENT_LISTENER_TOPIC = "allegroHand_0/current_listener";
@@ -64,22 +54,15 @@ class AllegroNodeGraspController {
 
     void graspTypeControllerCallback(const std_msgs::String::ConstPtr &msg);
 
+    void speedPerCallback(const handtracker::spper &msg);
+
     void nextStateCallback(const sensor_msgs::JointState &msg);
 
     void initControllerxx();
 
     void doIt();
 
-
-    //void jointStop(void);
-
     //void computeDesiredTorque();
-
-    
-
-    //void tactileInfoCallback(const std_msgs::String::ConstPtr &msg);
-
-    
 
     //void setJointCallback(const sensor_msgs::JointState &msg);
 
@@ -93,6 +76,7 @@ class AllegroNodeGraspController {
     ros::Subscriber grasp_type_sub;
     ros::Subscriber next_state_sub;
     ros::Subscriber tactile_sub;
+    ros::Subscriber SpeedPer_sub;
 
     ros::Publisher current_state_pub;
     ros::Publisher desired_state_pub;
@@ -101,14 +85,10 @@ class AllegroNodeGraspController {
 
     boost::mutex *mutex;
 
-    
-
-    //ros::Subscriber envelop_torque_sub;
-
-
-
     sensor_msgs::JointState desired_state;
     sensor_msgs::JointState current_state;
+    handtracker::spper speedMsg;
+
     
     double home_pose[16] =
         {
