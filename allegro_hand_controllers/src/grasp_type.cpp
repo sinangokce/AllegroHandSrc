@@ -33,9 +33,7 @@ AllegroNodeGraspController::AllegroNodeGraspController()
 
   current_state_pub = nh.advertise<sensor_msgs::JointState>(CURRENT_LISTENER_TOPIC, 1);
 
-  stop_pub = nh.advertise<std_msgs::String>(STOP_TOPIC, 1);
-
-  
+  stop_pub = nh.advertise<std_msgs::String>(STOP_TOPIC, 1); 
 }
 
 AllegroNodeGraspController::~AllegroNodeGraspController() {
@@ -59,10 +57,8 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   if (grasp_type.compare("home") == 0) {
     condinit = 1;
 
-    //mutex->lock();
-      for (int i = 0; i < DOF_JOINTS; i++)
-        desired_position[i] = DEGREES_TO_RADIANS(home_pose[i]); 
-    //mutex->unlock();  
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = DEGREES_TO_RADIANS(home_pose[i]); 
 
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
@@ -72,11 +68,10 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("power") == 0) {
     condinit = 1;
 
-    //mutex->lock();
-      for (int i = 0; i < DOF_JOINTS; i++)
-        desired_position[i] = power[i];
-    //mutex->unlock();
-
+    
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = power[i];
+   
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
     stop_pub.publish(stop_msg);
@@ -85,11 +80,9 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("thumb") == 0) {
     condinit = 1;
 
-    //mutex->lock();
-      for (int i = 0; i < DOF_JOINTS; i++)
-        desired_position[i] = thumb[i];
-    //mutex->unlock();
-
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = thumb[i];
+   
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
     stop_pub.publish(stop_msg);
@@ -98,11 +91,9 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("pinch") == 0) {
     condinit = 1;
 
-    
-      for (int i = 0; i < DOF_JOINTS; i++)
-        desired_position[i] = pinch[i];
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = pinch[i];
   
-
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
     stop_pub.publish(stop_msg);
@@ -111,11 +102,9 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("lateral") == 0) {
     condinit = 1;
 
-  
-      for (int i = 0; i < DOF_JOINTS; i++)
-        desired_position[i] = lateral[i]; 
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = lateral[i]; 
    
-
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
     stop_pub.publish(stop_msg);
@@ -178,7 +167,6 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
       stop_table[i] = 0;
     }
     
-
     condinit = 0;
     current_state_pub.publish(current_state);
   }
