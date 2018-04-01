@@ -11,7 +11,7 @@
 int joint[16];
 int stop_table[16];
 int condinit;
-float speed_Percentage=0;
+float speed_Percentage=1;
 float hand_Direction=0;
 double desired_position[DOF_JOINTS] = {0.0};
 double current_position[DOF_JOINTS] = {0.0};
@@ -98,10 +98,10 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("pinch") == 0) {
     condinit = 1;
 
-    //mutex->lock();
+    
       for (int i = 0; i < DOF_JOINTS; i++)
         desired_position[i] = pinch[i];
-    //mutex->unlock();
+  
 
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
@@ -111,10 +111,10 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("lateral") == 0) {
     condinit = 1;
 
-    //mutex->lock();
+  
       for (int i = 0; i < DOF_JOINTS; i++)
         desired_position[i] = lateral[i]; 
-    //mutex->unlock();
+   
 
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
@@ -159,31 +159,25 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
 
   if (condinit == 1) {
 
-    //mutex->lock();
+
     current_state.position.resize(DOF_JOINTS);
     for (int i = 0; i < 12; i++) {
       current_state.position[i] = 0.0;
     }
-    //mutex->unlock();
-
-    //mutex->lock();
+    
     current_state.position[12] = 1.05;
-    //mutex->unlock();
-
-    //mutex->lock();
+  
     for (int i = 13; i < DOF_JOINTS; i++) {
       current_state.position[i] = 0.0;
     }
-    //mutex->unlock();
-
-    //mutex->lock();
+   
     for (int i = 0; i < DOF_JOINTS; i++) {
       distance[i] = std::abs(desired_position[i] - current_state.position[i]);
       current_state.velocity[i] = (distance[i]/8000)*speed_Percentage;
       joint[i] = 0;
       stop_table[i] = 0;
     }
-    //mutex->unlock();
+    
 
     condinit = 0;
     current_state_pub.publish(current_state);
@@ -192,46 +186,30 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
 
 void AllegroNodeGraspController::nextStateCallback(const sensor_msgs::JointState &msg) {
   current_state = msg;
-  //mutex->lock();
   for (int i = 0; i < DOF_JOINTS; i++) {
     if (current_state.position[i] >= desired_position[i]) 
       joint[i] = 1;
   }
-  //mutex->unlock();
-               
-  //mutex->lock();
+  
   for (int i = 0; i < DOF_JOINTS; i++) {
     if (joint[i] == 1 && stop_table[i] == 0) {
       current_state.position[i] = desired_position[i];
     }
   }
-  //mutex->unlock();
 
-  //mutex->lock();
   for (int i = 0; i < (DOF_JOINTS); i++)
   {
     if (joint[i] != 1 &&  stop_table[i] != 1 ) {
       current_state_pub.publish(current_state);
     }
   }
-  //mutex->unlock();
+ 
 
   desired_state_pub.publish(current_state);
 }
 
-/*void AllegroNodeGrasp::computeDesiredTorque() {
-
-  pBHand->SetJointPosition(current_position_filtered);
-
-
-  pBHand->UpdateControl((double) frame * ALLEGRO_CONTROL_TIME_INTERVAL);
-
-  pBHand->GetJointTorque(desired_torque);
-}*/
-
 void AllegroNodeGraspController::initControllerxx() {
   std::cout<<"okokokok\n";
-  //mutex->lock();
 
   current_state.position.resize(DOF_JOINTS);
    ROS_INFO("dghsadhsa");
@@ -240,15 +218,6 @@ void AllegroNodeGraspController::initControllerxx() {
   desired_state.position.resize(DOF_JOINTS);
   desired_state.velocity.resize(DOF_JOINTS);
   ROS_INFO("543545");
-  //mutex->unlock();
-  
-
-  
-  // sets initial desired pos at start pos for PD control
-  /*mutex->lock();
-  for (int i = 0; i < DOF_JOINTS; i++)
-    desired_position[i] = current_position[i];
-  mutex->unlock();*/
 
   printf("*************************************\n");
   printf("         Grasp (BHand) Method        \n");
