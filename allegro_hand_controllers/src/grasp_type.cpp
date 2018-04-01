@@ -173,7 +173,7 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
    
     for (int i = 0; i < DOF_JOINTS; i++) {
       distance[i] = std::abs(desired_position[i] - current_state.position[i]);
-      current_state.velocity[i] = (distance[i]/8000)*speed_Percentage;
+      current_state.velocity[i] = (distance[i]/8000);
       joint[i] = 0;
       stop_table[i] = 0;
     }
@@ -203,8 +203,6 @@ void AllegroNodeGraspController::nextStateCallback(const sensor_msgs::JointState
       current_state_pub.publish(current_state);
     }
   }
- 
-
   desired_state_pub.publish(current_state);
 }
 
@@ -228,7 +226,6 @@ void AllegroNodeGraspController::initControllerxx() {
 void AllegroNodeGraspController::doIt() {
   ros::Rate rate(250.0);
   while (ros::ok()) {
-    //updateController();
     rate.sleep();
     ros::spinOnce();
   }
@@ -236,7 +233,6 @@ void AllegroNodeGraspController::doIt() {
 int main(int argc, char **argv) {
   ros::init(argc, argv, "allegro_hand_core_grasp");
   AllegroNodeGraspController grasping;
-
 
   grasping.doIt();
 }
