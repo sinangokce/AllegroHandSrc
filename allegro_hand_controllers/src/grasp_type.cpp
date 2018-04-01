@@ -49,7 +49,7 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   std_msgs::String stop_msg;
   std::stringstream stop_ss;
   
-  condinit = 0;
+  //condinit = 0;
 
   if (grasp_type.compare("home") == 0) {
     condinit = 1;
