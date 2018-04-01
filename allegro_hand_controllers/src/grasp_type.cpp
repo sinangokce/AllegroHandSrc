@@ -148,7 +148,6 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
 
   if (condinit == 1) {
 
-
     current_state.position.resize(DOF_JOINTS);
     for (int i = 0; i < 12; i++) {
       current_state.position[i] = 0.0;
