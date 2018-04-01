@@ -18,8 +18,8 @@ double current_position[DOF_JOINTS] = {0.0};
 double previous_position[DOF_JOINTS] = {0.0};
 double distance[DOF_JOINTS] = {0.0};
 
-AllegroNodeGraspController::AllegroNodeGraspController()
-         {
+AllegroNodeGraspController::AllegroNodeGraspController() {
+         
 
   initControllerxx();
 
@@ -82,7 +82,7 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
 
     for (int i = 0; i < DOF_JOINTS; i++)
       desired_position[i] = thumb[i];
-   
+    
     stop_ss << "false";
     stop_msg.data = stop_ss.str();
     stop_pub.publish(stop_msg);
