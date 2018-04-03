@@ -193,7 +193,9 @@ void AllegroNodeGraspController::nextStateCallback(const sensor_msgs::JointState
   if (back == 1) {
     ROS_INFO("back");
     for (int i = 0; i < 12; i++) {
-      if (current_state.position[i] <= 0.0) 
+      if (desired_position[i] >= 0 &&  current_state.position[i] <= 0.0) 
+        joint[i] = 1;
+      else if(desired_position[i] <= 0 &&  current_state.position[i] >= 0.0)
         joint[i] = 1;
     }
 
@@ -201,7 +203,9 @@ void AllegroNodeGraspController::nextStateCallback(const sensor_msgs::JointState
         joint[12] = 1;
 
     for (int i = 13; i < DOF_JOINTS; i++) {
-      if (current_state.position[i] <= 0.0) 
+      if (desired_position[i] >= 0 && current_state.position[i] <= 0.0) 
+        joint[i] = 1;
+      else if (desired_position[i] <= 0 &&  current_state.position[i] >= 0.0)
         joint[i] = 1;
     }  
   
