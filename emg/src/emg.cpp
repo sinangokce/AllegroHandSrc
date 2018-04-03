@@ -247,6 +247,24 @@ void AHKeyboard::keyLoop()
         ss << "thumb_tactile";
         dirty = true;
         break;  
+
+      case KEYCODE_q:
+        ROS_DEBUG("q_key: Back");
+        ss << "open";
+        dirty = true;
+        break;  
+
+      case KEYCODE_w:
+        ROS_DEBUG("w_key: No Movement");
+        ss << "stay";
+        dirty = true;
+        break;  
+
+      case KEYCODE_e:
+        ROS_DEBUG("e_key: Close");
+        ss << "close";
+        dirty = true;
+        break;    
     }
 
     if(dirty ==true)
