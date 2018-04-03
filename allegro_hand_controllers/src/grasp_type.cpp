@@ -83,7 +83,6 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   else if (grasp_type.compare("power") == 0) {
     condinit = 1;
 
-    
     for (int i = 0; i < DOF_JOINTS; i++)
       desired_position[i] = power[i];
    
@@ -175,7 +174,7 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
     }
    
     for (int i = 0; i < DOF_JOINTS; i++) {
-      distance[i] = std::abs(desired_position[i] - current_state.position[i]);
+      distance[i] = desired_position[i] - current_state.position[i];
       current_state.velocity[i] = (distance[i]/8000);
       joint[i] = 0;
       stop_table[i] = 0;
