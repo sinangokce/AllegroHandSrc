@@ -26,6 +26,7 @@ double velocity[DOF_JOINTS] = {0.0};
 double dt;
 int stop_table[16];
 bool cond;
+int back = 0;
 
 class currentListener
 {
@@ -62,33 +63,40 @@ currentListener::currentListener() {
 void currentListener::stopCallback(const std_msgs::String::ConstPtr &msg) {
   const std::string condition = msg->data;
 
-  if (condition.compare("false") == 0)
-    for (int i = 0; i < DOF_JOINTS; i++) {
+  if (condition.compare("false") == 0) {
+    for (int i = 0; i < DOF_JOINTS; i++) 
       stop_table[i] = 0;
-    }
+    back = 0;
+  }
+
+  if (condition.compare("back") == 0) {
+    for (int i = 0; i < DOF_JOINTS; i++) 
+      stop_table[i] = 0;
+    back = 1;
+  }  
 
   if (condition.compare("little_tactile") == 0) {
-    for (int i = 8; i < 12; i++) {
+    for (int i = 8; i < 12; i++) 
       stop_table[i] = 1;
-    }
+    back = 0;
   }
 
   else if (condition.compare("middle_tactile") == 0) {
-    for (int i = 4; i < 8; i++) {
+    for (int i = 4; i < 8; i++) 
       stop_table[i] = 1;
-    }
+    back = 0;
   }
 
   else if (condition.compare("index_tactile") == 0) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++) 
       stop_table[i] = 1;
-    }
+    back = 0;
   }
 
   else if (condition.compare("thumb_tactile") == 0) {
-    for (int i = 12; i < 16; i++) {
+    for (int i = 12; i < 16; i++) 
       stop_table[i] = 1;
-    }
+    back = 0;
   }
  
 }
@@ -110,8 +118,15 @@ void currentListener::currentListenerCallback(const sensor_msgs::JointState &msg
       velocity[i] = current_joint_state.velocity[i];
   }
   
-  for (int i = 0; i < (int)DOF_JOINTS; i++) {
-    current_joint_state.position[i] = current_joint_state.position[i] + velocity[i] / dt; //0.001; //velocity[i]*dt;
+  if (back == 1){
+    for (int i = 0; i < (int)DOF_JOINTS; i++) {
+      current_joint_state.position[i] = current_joint_state.position[i] - velocity[i] / dt; //0.001; //velocity[i]*dt;
+    }
+  }
+  else {
+    for (int i = 0; i < (int)DOF_JOINTS; i++) {
+      current_joint_state.position[i] = current_joint_state.position[i] + velocity[i] / dt; //0.001; //velocity[i]*dt;
+    }
   }
 
   next_state_pub.publish(current_joint_state);

@@ -15,6 +15,7 @@ double desired_position[DOF_JOINTS] = {0.0};
 double current_position[DOF_JOINTS] = {0.0};
 double previous_position[DOF_JOINTS] = {0.0};
 double distance[DOF_JOINTS] = {0.0};
+int back = 0;
 
 AllegroNodeGraspController::AllegroNodeGraspController() {
          
@@ -49,7 +50,8 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
   std_msgs::String stop_msg;
   std::stringstream stop_ss;
   
-  //condinit = 0;
+  condinit = 0;
+  back = 0;
 
   if (grasp_type.compare("home") == 0) {
     condinit = 1;
@@ -58,6 +60,22 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
       desired_position[i] = DEGREES_TO_RADIANS(home_pose[i]); 
 
     stop_ss << "false";
+    stop_msg.data = stop_ss.str();
+    stop_pub.publish(stop_msg);
+  }
+
+  if (grasp_type.compare("back") == 0) {
+
+    for (int i = 0; i < DOF_JOINTS; i++)
+      desired_position[i] = DEGREES_TO_RADIANS(home_pose[i]); 
+
+    for (int i = 0; i < DOF_JOINTS; i++) {
+      joint[i] = 0;
+      stop_table[i] = 0;
+    }
+
+    back = 1;
+    stop_ss << "back";
     stop_msg.data = stop_ss.str();
     stop_pub.publish(stop_msg);
   }
@@ -170,23 +188,72 @@ void AllegroNodeGraspController::graspTypeControllerCallback(const std_msgs::Str
 
 void AllegroNodeGraspController::nextStateCallback(const sensor_msgs::JointState &msg) {
   current_state = msg;
-  for (int i = 0; i < DOF_JOINTS; i++) {
-    if (current_state.position[i] >= desired_position[i]) 
-      joint[i] = 1;
-  }
-  
-  for (int i = 0; i < DOF_JOINTS; i++) {
-    if (joint[i] == 1 && stop_table[i] == 0) {
-      current_state.position[i] = desired_position[i];
-    }
-  }
 
-  for (int i = 0; i < (DOF_JOINTS); i++)
-  {
-    if (joint[i] != 1 &&  stop_table[i] != 1 ) {
-      current_state_pub.publish(current_state);
+
+//The stop condition changes if the hand moves back
+  if (back == 1) {
+    ROS_INFO("back");
+    for (int i = 0; i < 12; i++) {
+      if (current_state.position[i] <= 0.0) 
+        joint[i] = 1;
+    }
+
+    if (current_state.position[12] <= 1.05) 
+        joint[12] = 1;
+
+    for (int i = 13; i < DOF_JOINTS; i++) {
+      if (current_state.position[i] <= 0.0) 
+        joint[i] = 1;
+    }  
+  
+    for (int i = 0; i < 12; i++) {
+      if (joint[i] == 1 && stop_table[i] == 0) {
+        current_state.position[i] = 0;
+      }
+    }
+
+    if (joint[12] == 1 && stop_table[12] == 0) {
+        current_state.position[12] = 1.05;
+      }
+
+    for (int i = 13; i < DOF_JOINTS; i++) {
+      if (joint[i] == 1 && stop_table[i] == 0) {
+        current_state.position[i] = 0;
+      }
+    }  
+
+
+
+    for (int i = 0; i < (DOF_JOINTS); i++)
+    {
+      if (joint[i] != 1 &&  stop_table[i] != 1 ) {
+        current_state_pub.publish(current_state);
+      }
     }
   }
+//The stop condition if hand moves forward
+  else if (back != 1){
+    ROS_INFO("no back");
+    for (int i = 0; i < DOF_JOINTS; i++) {
+      if (current_state.position[i] >= desired_position[i]) 
+        joint[i] = 1;
+    }
+  
+    for (int i = 0; i < DOF_JOINTS; i++) {
+      if (joint[i] == 1 && stop_table[i] == 0) {
+        current_state.position[i] = desired_position[i];
+      }
+    }
+
+    for (int i = 0; i < (DOF_JOINTS); i++)
+    {
+      if (joint[i] != 1 &&  stop_table[i] != 1 ) {
+        current_state_pub.publish(current_state);
+      }
+    }
+  }  
+
+
   desired_state_pub.publish(current_state);
 }
 

@@ -247,6 +247,12 @@ void AHKeyboard::keyLoop()
         ss << "thumb_tactile";
         dirty = true;
         break;  
+
+      case KEYCODE_b:
+        ROS_DEBUG("b_key: Back");
+        ss << "back";
+        dirty = true;
+        break;   
     }
 
     if(dirty ==true)
